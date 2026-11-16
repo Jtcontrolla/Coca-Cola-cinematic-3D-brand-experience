@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/*
+  Design tokens
+  Coke red carries the brand; burgundy and pure black are the "studio" darks;
+  white is the print colour of the Spencerian wordmark; silver is raw aluminium.
+  One family (Archivo, variable width) does all the talking: crushed to 62% width
+  at weight 900 for campaign headlines, normal width for reading text.
+*/
+@theme {
+  --color-coke: #F40009;
+  --color-coke-deep: #C20012;
+  --color-burgundy: #4A0710;
+  --color-oxblood: #7A0A14;
+  --color-ink: #000000;
+  --color-paper: #FFFFFF;
+  --color-silver: #D7DADF;
+  --color-fizz: #FFE9E4;
+
+  --font-sans: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --font-display: "Archivo Variable", "Archivo", Impact, sans-serif;
+
+  --ease-film: cubic-bezier(0.77, 0, 0.18, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  color-scheme: dark;
+  --nav-h: 76px;
+}
+
+html {
+  background: #000;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  font-family: var(--font-sans);
+  font-variation-settings: "wdth" 100;
+  background: #000;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--color-coke); color: #fff; }
+
+/* Campaign display type: condensed, black, tight */
+.display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-stretch: 62%;
+  font-variation-settings: "wdth" 62;
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.wide {
+  font-stretch: 125%;
+  font-variation-settings: "wdth" 125;
+}
+.outline-type {
+  -webkit-text-fill-color: transparent; /* keep `color` so the stroke can use currentColor */
+  -webkit-text-stroke: 2px currentColor;
+}
+@supports not (-webkit-text-stroke: 1px black) {
+  .outline-type { color: currentColor; opacity: .25; }
+}
+
+/* split-text helpers */
+.split-line { display: block; }
+.split-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.split-char, .split-word { display: inline-block; will-change: transform; }
+
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* film grain over dark scenes – very light */
+.grain::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");
+  opacity: .06;
+  mix-blend-mode: overlay;
+}
+
+.canvas-wrap canvas { touch-action: pan-y; }
+
+@keyframes marquee { from { transform: translate3d(0,0,0) } to { transform: translate3d(-50%,0,0) } }
+.marquee-track { animation: marquee 28s linear infinite; }
+
+@keyframes scrollcue {
+  0% { transform: scaleY(0); transform-origin: top }
+  45% { transform: scaleY(1); transform-origin: top }
+  55% { transform: scaleY(1); transform-origin: bottom }
+  100% { transform: scaleY(0); transform-origin: bottom }
+}
+.scroll-cue { animation: scrollcue 2.2s var(--ease-film) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .scroll-cue { animation: none; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}
